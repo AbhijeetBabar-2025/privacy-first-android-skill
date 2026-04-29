@@ -1,8 +1,11 @@
 # Privacy-First Architecture
 
-This guide defines how to design Android app architecture with **user privacy as the foundational constraint**. Every architectural decision must pass the privacy test: _"Does this minimize data exposure and maximize user control?"_
+This guide defines how to design Android app architecture with **user privacy as the
+foundational constraint**. Every architectural decision must pass the privacy test:
+_"Does this minimize data exposure and user surveillance?"_
 
 ## Table of Contents
+
 1. [Data Classification Framework](#data-classification-framework)
 2. [Data Minimization Checklist](#data-minimization-checklist)
 3. [Privacy-Aware Module Design](#privacy-aware-module-design)
@@ -42,6 +45,7 @@ annotation class Classified(val level: DataClassification)
 **Run for every feature before writing code:**
 
 ### Before Collecting
+
 - [ ] Is this data **strictly necessary** for the feature?
 - [ ] Can the feature work with **less specific** data?
 - [ ] Can it work with **derived/aggregated** data instead of raw?
@@ -49,17 +53,20 @@ annotation class Classified(val level: DataClassification)
 - [ ] Have you documented **why** this data is needed?
 
 ### Before Storing
+
 - [ ] What is the **minimum retention period**?
 - [ ] Is storage encrypted per Data Classification?
 - [ ] Is the data excluded from cloud backups?
 - [ ] Can the data be **derived on-demand** instead?
 
 ### Before Transmitting
+
 - [ ] Is the connection HTTPS with certificate pinning?
 - [ ] Sending only **minimum fields** the API requires?
 - [ ] Is PII in the request **body** (not URL parameters)?
 
 ### Before Logging/Analytics
+
 - [ ] Does the log/event contain **zero PII**?
 - [ ] Are IDs anonymized or hashed?
 - [ ] Has the user consented to analytics?
@@ -96,7 +103,8 @@ interface ConsentManager {
 }
 
 enum class ConsentPurpose {
-    ANALYTICS, CRASH_REPORTING, PERSONALIZATION, MARKETING, THIRD_PARTY_SHARING
+    ANALYTICS, CRASH_REPORTING, PERSONALIZATION, MARKETING,
+    THIRD_PARTY_SHARING
 }
 
 // DataRetentionManager.kt
@@ -112,32 +120,43 @@ class PrivacyGuard @Inject constructor(
 ) {
     suspend fun <T> withConsent(
         purpose: ConsentPurpose, fallback: T, operation: suspend () -> T
-    ): T = if (consentManager.hasConsent(purpose)) operation() else fallback
+    ): T = if (consentManager.hasConsent(purpose)) operation()
+        else fallback
 
     fun sanitize(input: String): String = input
-        .replace(Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"), "[EMAIL]")
+        .replace(
+            Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"),
+            "[EMAIL]"
+        )
         .replace(Regex("\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b"), "[PHONE]")
         .replace(Regex("\\b\\d{3}-\\d{2}-\\d{4}\\b"), "[SSN]")
-        .replace(Regex("\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b"), "[CARD]")
+        .replace(
+            Regex("\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b"),
+            "[CARD]"
+        )
 }
 ```
 
 ## Privacy Data Flow Rules
 
 ### Inbound Data (Collection)
+
 ```
 User Input → Consent Check → Classify → Encrypt (if needed) → Store
 ```
 
 ### Outbound Data (API Calls)
+
 ```
 Read → Decrypt → Transform (minimize fields) → HTTPS + Pinning → Server
 ```
+
 - **Never** send more fields than the API requires
 - **Never** put PII in URL query parameters
 - Implement request signing for Restricted tier
 
 ### Analytics Data
+
 ```
 Event → Consent Check → PII Scrub → Anonymize IDs → Send (or Drop)
 ```
@@ -147,7 +166,10 @@ class PrivacySafeAnalytics @Inject constructor(
     private val analyticsProvider: AnalyticsProvider,
     private val privacyGuard: PrivacyGuard
 ) {
-    suspend fun trackEvent(name: String, params: Map<String, Any> = emptyMap()) {
+    suspend fun trackEvent(
+        name: String,
+        params: Map<String, Any> = emptyMap()
+    ) {
         privacyGuard.withConsent(ConsentPurpose.ANALYTICS, Unit) {
             val safeParams = params.mapValues { (_, v) ->
                 if (v is String) privacyGuard.sanitize(v) else v
@@ -179,6 +201,7 @@ Log.d(TAG, "User logged in successfully")
 ```
 
 ### R8 Log Stripping
+
 ```proguard
 -assumenosideeffects class android.util.Log {
     public static int v(...);
@@ -201,9 +224,11 @@ class DataRetentionWorker @AssistedInject constructor(
         RetentionPolicy("search_history", 30, ExpiryAction.DELETE),
         RetentionPolicy("cached_profiles", 7, ExpiryAction.DELETE)
     )
+
     override suspend fun doWork(): Result {
         policies.forEach { policy ->
-            val cutoff = System.currentTimeMillis() - (policy.maxAgeDays * 86_400_000L)
+            val cutoff = System.currentTimeMillis() -
+                (policy.maxAgeDays * 86_400_000L)
             // Execute cleanup per policy.dataType
         }
         return Result.success()
@@ -215,15 +240,16 @@ class DataRetentionWorker @AssistedInject constructor(
 
 ```
 Create Account → Consent → Encrypt & Store → Active Usage
-  ↓                                              ↓
+   ↓                                              ↓
 Retention Cleanup (periodic)              User Requests Export/Delete
-  ↓                                              ↓
+   ↓                                              ↓
 Auto-purge expired data                  Anonymize → Hard Delete (30 days)
 ```
 
 ## Privacy Dashboard Pattern
 
 Every app should include a Privacy Dashboard in Settings:
+
 - Active consent preferences (toggles)
 - Data categories stored (with encryption status)
 - "Export My Data" action
@@ -233,6 +259,7 @@ Every app should include a Privacy Dashboard in Settings:
 ## Anti-Patterns
 
 ### ❌ Never
+
 - Collect data "just in case"
 - Log PII at any level
 - Store tokens in plain SharedPreferences
@@ -242,6 +269,7 @@ Every app should include a Privacy Dashboard in Settings:
 - Use hardware IDs (IMEI, MAC) for tracking
 
 ### ✅ Always
+
 - Collect only what's needed
 - Use PrivacyLogger wrapper
 - Use EncryptedSharedPreferences
