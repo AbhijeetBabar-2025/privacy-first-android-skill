@@ -1,0 +1,76 @@
+name: Security & Quality Check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: '**/*.md'
+
+  link-check:
+    name: Check Internal Links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for broken internal links
+        run: |
+          echo "Checking internal reference links..."
+          ERRORS=0
+          for file in references/*.md; do
+            # Check relative links within references/
+            grep -oP '\[.*?\]\(((?!http)[^)]+)\)' "$file" | grep -oP '\(([^)]+)\)' | tr -d '()' | while read link; do
+              # Strip anchors
+              base_link=$(echo "$link" | cut -d'#' -f1)
+              if [ -n "$base_link" ] && [ ! -f "references/$base_link" ] && [ ! -f "$base_link" ]; then
+                echo "❌ Broken link in $file: $link"
+                ERRORS=$((ERRORS + 1))
+              fi
+            done
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "Found $ERRORS broken links"
+            exit 1
+          fi
+          echo "✅ All internal links valid"
+
+  content-check:
+    name: Content Safety Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for hardcoded secrets in examples
+        run: |
+          echo "Scanning for potential secrets in code examples..."
+          if grep -rn "AIza\|sk_live\|-----BEGIN\|PRIVATE KEY" --include="*.md" --include="*.template" .; then
+            echo "❌ Potential secrets found in documentation!"
+            exit 1
+          fi
+          echo "✅ No secrets found"
+
+      - name: Verify privacy references exist
+        run: |
+          echo "Verifying core privacy files exist..."
+          REQUIRED_FILES=(
+            "SKILL.md"
+            "references/privacy-architecture.md"
+            "references/privacy-compliance.md"
+            "references/android-security.md"
+            "references/android-permissions.md"
+          )
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing required file: $file"
+              exit 1
+            fi
+          done
+          echo "✅ All required files present"

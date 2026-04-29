@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Privacy-First: Exclude sensitive data from cloud backups and device transfers -->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Exclude encrypted preferences -->
+        <exclude domain="sharedpref" path="secure_prefs.xml" />
+        <!-- Exclude databases (may contain encrypted PII) -->
+        <exclude domain="database" path="app_database" />
+        <!-- Exclude all internal files by default -->
+        <exclude domain="file" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <!-- Exclude encrypted preferences from device-to-device transfer -->
+        <exclude domain="sharedpref" path="secure_prefs.xml" />
+        <!-- Exclude databases -->
+        <exclude domain="database" path="app_database" />
+    </device-transfer>
+</data-extraction-rules>

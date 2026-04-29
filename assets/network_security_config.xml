@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Block all cleartext (HTTP) traffic -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Pin your API domain (update hashes for your server) -->
+    <!--
+    <domain-config>
+        <domain includeSubdomains="true">api.yourdomain.com</domain>
+        <pin-set expiration="2027-01-01">
+            <pin digest="SHA-256">YOUR_PRIMARY_PIN_HASH=</pin>
+            <pin digest="SHA-256">YOUR_BACKUP_PIN_HASH=</pin>
+        </pin-set>
+    </domain-config>
+    -->
+
+    <!-- Debug overrides (only active in debug builds) -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

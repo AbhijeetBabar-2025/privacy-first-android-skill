@@ -1,0 +1,37 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Build
+/build/
+*.apk
+*.aab
+
+# Signing (NEVER commit)
+*.jks
+*.keystore
+signing.properties
+
+# API keys and secrets (NEVER commit)
+google-services.json
+sentry.properties
+local.properties
+.env
+.env.*
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# Kotlin
+*.class
+
+# Test output
+/test-results/
+/coverage/
