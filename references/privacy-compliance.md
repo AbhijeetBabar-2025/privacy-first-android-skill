@@ -1,8 +1,11 @@
 # Privacy Compliance (GDPR / CCPA / Play Store)
 
-Patterns for building Android apps that comply with GDPR, CCPA, and Google Play policies. All patterns assume the `core/privacy` module from [privacy-architecture.md](privacy-architecture.md).
+Patterns for building Android apps that comply with GDPR, CCPA,
+and Google Play policies. All patterns assume the `core/privacy`
+module from [privacy-architecture.md](privacy-architecture.md).
 
 ## Table of Contents
+
 1. [Consent Management](#consent-management)
 2. [Data Subject Rights](#data-subject-rights)
 3. [Privacy-Safe Analytics](#privacy-safe-analytics)
@@ -15,7 +18,8 @@ Patterns for building Android apps that comply with GDPR, CCPA, and Google Play 
 
 ### Consent UI Flow
 
-Show consent **before** any data collection begins. Never pre-check consent boxes.
+Show consent **before** any data collection begins. Never
+pre-check consent boxes.
 
 ```kotlin
 @Composable
@@ -26,36 +30,52 @@ fun ConsentScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.padding(24.dp)) {
-        Text("Your Privacy Matters", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            "Your Privacy Matters",
+            style = MaterialTheme.typography.headlineMedium
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        Text("We respect your privacy. Please choose what data we can use:")
+        Text("We respect your privacy. Please choose what data we " +
+            "can use:")
 
         ConsentToggle(
             title = "Analytics",
-            description = "Help us improve the app with anonymous usage data",
+            description = "Help us improve the app with anonymous " +
+                "usage data",
             checked = uiState.analyticsConsent,
-            onCheckedChange = { viewModel.setConsent(ConsentPurpose.ANALYTICS, it) }
+            onCheckedChange = {
+                viewModel.setConsent(ConsentPurpose.ANALYTICS, it)
+            }
         )
         ConsentToggle(
             title = "Crash Reporting",
-            description = "Send crash reports to help us fix bugs faster",
+            description = "Send crash reports to help us fix bugs " +
+                "faster",
             checked = uiState.crashConsent,
-            onCheckedChange = { viewModel.setConsent(ConsentPurpose.CRASH_REPORTING, it) }
+            onCheckedChange = {
+                viewModel.setConsent(ConsentPurpose.CRASH_REPORTING, it)
+            }
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(onClick = {
-            viewModel.saveConsents()
-            onConsentComplete()
-        }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = {
+                viewModel.saveConsents()
+                onConsentComplete()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Continue")
         }
 
-        TextButton(onClick = {
-            viewModel.denyAll()
-            onConsentComplete()
-        }, modifier = Modifier.fillMaxWidth()) {
+        TextButton(
+            onClick = {
+                viewModel.denyAll()
+                onConsentComplete()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Skip — Use app with minimal data")
         }
     }
@@ -68,28 +88,39 @@ fun ConsentScreen(
 class ConsentManagerImpl @Inject constructor(
     private val securePrefs: SecurePreferences
 ) : ConsentManager {
-    override suspend fun hasConsent(purpose: ConsentPurpose): Boolean {
-        return securePrefs.getBoolean("consent_${purpose.name}", false)
+    override suspend fun hasConsent(
+        purpose: ConsentPurpose
+    ): Boolean {
+        return securePrefs.getBoolean(
+            "consent_${purpose.name}", false
+        )
     }
 
-    override suspend fun requestConsent(purpose: ConsentPurpose): ConsentResult {
-        // UI handles the actual request; this records the result
-        return if (hasConsent(purpose)) ConsentResult.Granted else ConsentResult.Denied
+    override suspend fun requestConsent(
+        purpose: ConsentPurpose
+    ): ConsentResult {
+        return if (hasConsent(purpose))
+            ConsentResult.Granted else ConsentResult.Denied
     }
 
-    override suspend fun revokeConsent(purpose: ConsentPurpose) {
+    override suspend fun revokeConsent(
+        purpose: ConsentPurpose
+    ) {
         securePrefs.putBoolean("consent_${purpose.name}", false)
         securePrefs.remove("consent_${purpose.name}_timestamp")
         // Trigger data cleanup for this purpose
     }
 
-    override fun getActiveConsents(): Flow<List<ConsentRecord>> = flow {
+    override fun getActiveConsents():
+        Flow<List<ConsentRecord>> = flow {
         val consents = ConsentPurpose.entries.map { purpose ->
             ConsentRecord(
                 purpose = purpose,
                 granted = hasConsent(purpose),
-                grantedAt = securePrefs.getLong("consent_${purpose.name}_timestamp", 0L)
-                    .takeIf { it > 0 }?.let { Instant.fromEpochMilliseconds(it) },
+                grantedAt = securePrefs
+                    .getLong("consent_${purpose.name}_timestamp", 0L)
+                    .takeIf { it > 0 }
+                    ?.let { Instant.fromEpochMilliseconds(it) },
                 expiresAt = null
             )
         }
@@ -123,7 +154,10 @@ class DataExportUseCase @Inject constructor(
                 activities.forEach { activity ->
                     addJsonObject {
                         put("type", activity.type)
-                        put("timestamp", activity.timestamp.toString())
+                        put(
+                            "timestamp",
+                            activity.timestamp.toString()
+                        )
                     }
                 }
             }
@@ -153,7 +187,9 @@ class DataDeletionUseCase @Inject constructor(
             securePrefs.clearAll()
 
             // 3. Revoke all consents
-            ConsentPurpose.entries.forEach { consentManager.revokeConsent(it) }
+            ConsentPurpose.entries.forEach {
+                consentManager.revokeConsent(it)
+            }
 
             // 4. Notify server of deletion request
             // api.requestAccountDeletion(userId)
@@ -169,6 +205,7 @@ class DataDeletionUseCase @Inject constructor(
 ## Privacy-Safe Analytics
 
 ### Rules
+
 - **Never** log PII (email, name, phone, location coordinates)
 - **Never** log user IDs that can be tied to real identities
 - **Always** check consent before sending events
@@ -215,19 +252,30 @@ class PrivacySafeCrashReporter @Inject constructor(
     private val consentManager: ConsentManager
 ) : CrashReporter {
     override fun recordException(throwable: Throwable) {
-        if (runBlocking { consentManager.hasConsent(ConsentPurpose.CRASH_REPORTING) }) {
+        if (runBlocking {
+                consentManager.hasConsent(
+                    ConsentPurpose.CRASH_REPORTING
+                )
+            }) {
             delegate.recordException(throwable.scrubPii())
         }
     }
 
     override fun log(message: String) {
-        if (runBlocking { consentManager.hasConsent(ConsentPurpose.CRASH_REPORTING) }) {
+        if (runBlocking {
+                consentManager.hasConsent(
+                    ConsentPurpose.CRASH_REPORTING
+                )
+            }) {
             delegate.log(scrubPii(message))
         }
     }
 
     private fun scrubPii(text: String): String = text
-        .replace(Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"), "[EMAIL]")
+        .replace(
+            Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"),
+            "[EMAIL]"
+        )
         .replace(Regex("Bearer\\s+\\S+"), "Bearer [REDACTED]")
         .replace(Regex("\\b\\d{10,}\\b"), "[REDACTED_NUM]")
 
@@ -244,7 +292,8 @@ class PrivacySafeCrashReporter @Inject constructor(
 - [ ] Mark data as "Required" or "Optional" accurately
 - [ ] Declare all **sharing** with third parties
 - [ ] Declare if data is **encrypted in transit** (should be yes)
-- [ ] Declare if data is **encrypted at rest** (should be yes for PII)
+- [ ] Declare if data is **encrypted at rest** (should be yes for
+  PII)
 - [ ] Declare if user can **request deletion** (should be yes)
 - [ ] Privacy policy URL is current and accessible
 - [ ] All declared practices match actual app behavior
@@ -275,11 +324,17 @@ class SdkPrivacyManager @Inject constructor(
     private val consentManager: ConsentManager
 ) {
     suspend fun syncSdkSettings() {
-        val analyticsConsent = consentManager.hasConsent(ConsentPurpose.ANALYTICS)
-        FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(analyticsConsent)
+        val analyticsConsent =
+            consentManager.hasConsent(ConsentPurpose.ANALYTICS)
+        FirebaseAnalytics.getInstance(context)
+            .setAnalyticsCollectionEnabled(analyticsConsent)
 
-        val crashConsent = consentManager.hasConsent(ConsentPurpose.CRASH_REPORTING)
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(crashConsent)
+        val crashConsent =
+            consentManager.hasConsent(
+                ConsentPurpose.CRASH_REPORTING
+            )
+        FirebaseCrashlytics.getInstance()
+            .setCrashlyticsCollectionEnabled(crashConsent)
     }
 }
 ```
@@ -295,25 +350,33 @@ fun PrivacyPolicyLink(url: String) {
     TextButton(onClick = { uriHandler.openUri(url) }) {
         Icon(Icons.Default.Policy, contentDescription = null)
         Spacer(Modifier.width(8.dp))
-        Text("Privacy Policy", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Privacy Policy",
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 ```
 
 ### Required Locations
+
 - Settings screen
 - Registration/consent screen
 - Play Store listing
 - First launch onboarding
 
 Required:
-- Consent must be obtained before any non-essential data collection.
+
+- Consent must be obtained before any non-essential data
+  collection.
 - Users must be able to export and delete their data.
 - Crash reports must have PII scrubbed before sending.
-- Play Console Data Safety must accurately reflect actual behavior.
+- Play Console Data Safety must accurately reflect actual
+  behavior.
 - Every third-party SDK must be audited for privacy compliance.
 
 Forbidden:
+
 - Pre-checked consent boxes.
 - Collecting data before consent is given.
 - Sending crash reports without crash reporting consent.
