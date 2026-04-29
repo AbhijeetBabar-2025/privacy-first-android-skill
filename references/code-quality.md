@@ -23,7 +23,7 @@
   run: ./gradlew detekt
 - name: Check for hardcoded secrets
   run: |
-    if grep -rn "AIza\|sk_live\|-----BEGIN" --include="*.kt" --include="*.xml" app/; then
+    if grep -rn "AIza\\|sk_live\\|-----BEGIN" --include="*.kt" --include="*.xml" app/; then
       echo "Potential secrets found!" && exit 1
     fi
 ```
