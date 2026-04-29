@@ -36,7 +36,8 @@ core/ui → core/common
 app → feature/*, core/*
 ```
 
-**Privacy module has minimal dependencies** — it should be importable by any module without circular dependencies.
+**Privacy module has minimal dependencies** — it should be
+importable by any module without circular dependencies.
 
 ## Creating a New Feature Module
 
@@ -45,4 +46,5 @@ app → feature/*, core/*
 3. Create package structure: `presentation/`, `navigation/`
 4. Register in `settings.gradle.kts`
 5. Add dependency in `app/build.gradle.kts`
-6. **Privacy check**: Run the Data Minimization Checklist from [privacy-architecture.md](privacy-architecture.md)
+6. **Privacy check**: Run the Data Minimization Checklist from
+   [privacy-architecture.md](privacy-architecture.md)
