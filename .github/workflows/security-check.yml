@@ -51,7 +51,12 @@ jobs:
       - name: Check for hardcoded secrets in examples
         run: |
           echo "Scanning for potential secrets in code examples..."
-          if grep -rn "AIza\|sk_live\|-----BEGIN\|PRIVATE KEY" --include="*.md" --include="*.template" .; then
+          # Exclude files that contain detection patterns as documentation examples
+          if grep -rn "AIza\|sk_live\|-----BEGIN\|PRIVATE KEY" \
+            --include="*.md" --include="*.template" \
+            --exclude="security-check.yml" \
+            --exclude="code-quality.md" \
+            .; then
             echo "❌ Potential secrets found in documentation!"
             exit 1
           fi
