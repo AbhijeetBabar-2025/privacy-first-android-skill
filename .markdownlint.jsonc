@@ -1,0 +1,10 @@
+{
+  // Line length - disabled, documentation has long lines by nature
+  "MD013": false,
+  // Inline HTML - disabled, README uses HTML for centering
+  "MD033": false,
+  // Fenced code language - disabled, some blocks are plain text examples
+  "MD040": false,
+  // Table column style spacing
+  "MD060": false
+}

@@ -13,6 +13,7 @@ For the comprehensive security reference, see [android-security.md in claude-and
 ## Quick Reference
 
 ### Network Security Config
+
 ```xml
 <!-- res/xml/network_security_config.xml -->
 <network-security-config>
@@ -30,6 +31,7 @@ For the comprehensive security reference, see [android-security.md in claude-and
 ```
 
 ### EncryptedSharedPreferences
+
 ```kotlin
 class SecurePreferences @Inject constructor(
     @ApplicationContext private val context: Context
@@ -52,6 +54,7 @@ class SecurePreferences @Inject constructor(
 ```
 
 ### Biometric Authentication
+
 ```kotlin
 class BiometricAuthenticator {
     fun authenticate(
@@ -77,6 +80,7 @@ class BiometricAuthenticator {
 ```
 
 ### Manifest Security
+
 ```xml
 <application
     android:allowBackup="false"
@@ -87,6 +91,7 @@ class BiometricAuthenticator {
 ```
 
 ### Screenshot Prevention
+
 ```kotlin
 @Composable
 fun SecureScreen(content: @Composable () -> Unit) {
@@ -103,6 +108,7 @@ fun SecureScreen(content: @Composable () -> Unit) {
 ```
 
 ### Security Checklist
+
 - [ ] HTTPS enforced, certificate pinning on critical APIs
 - [ ] Auth tokens in EncryptedSharedPreferences
 - [ ] Sensitive DB fields encrypted
@@ -117,11 +123,13 @@ fun SecureScreen(content: @Composable () -> Unit) {
 - [ ] API keys not hardcoded
 
 Required:
+
 - Server is the trust boundary.
 - Encrypt sensitive data at rest and in transit.
 - Use Android Keystore over software-managed keys.
 
 Forbidden:
+
 - Logging tokens, PII, or sensitive payloads.
 - Hardcoding API keys or secrets in source.
 - Storing secrets in plain SharedPreferences.

@@ -5,10 +5,12 @@ Thank you for your interest in contributing! This project aims to help developer
 ## How to Contribute
 
 ### 🐛 Report a Bug
+
 Found outdated guidance, incorrect patterns, or broken references?
 [Open a bug report](../../issues/new?template=bug_report.md)
 
 ### 💡 Suggest a Feature
+
 Have a privacy pattern or best practice to add?
 [Open a feature request](../../issues/new?template=feature_request.md)
 
@@ -23,18 +25,21 @@ Have a privacy pattern or best practice to add?
 ## Guidelines
 
 ### Content Standards
+
 - **Privacy-first**: Every pattern must consider privacy implications
 - **Practical**: Include working Kotlin code examples
 - **Current**: Use latest stable Android/Kotlin/Compose APIs
 - **Referenced**: Link to official Android documentation where applicable
 
 ### File Organization
+
 - New reference topics go in `references/`
 - New templates go in `assets/`
 - Update `SKILL.md` decision tree when adding new references
 - Update `README.md` structure section when adding files
 
 ### Code Examples
+
 - Use Kotlin (no Java)
 - Follow the project's Kotlin patterns (see `references/kotlin-patterns.md`)
 - Include privacy annotations (`@Classified`) where relevant
@@ -42,6 +47,7 @@ Have a privacy pattern or best practice to add?
 - Use placeholder domains (`api.example.com`, `yourdomain.com`)
 
 ### Commit Messages
+
 ```
 feat: add privacy-safe push notification patterns
 fix: update Room 3 encryption to use SQLiteDriver

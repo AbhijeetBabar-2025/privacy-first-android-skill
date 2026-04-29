@@ -30,6 +30,7 @@ Inspired by [claude-android-ninja](https://github.com/Drjacky/claude-android-nin
 ## ✨ Features
 
 ### 🔒 Privacy-First (What Makes This Unique)
+
 - **Data Classification Framework** — Public, Internal, Confidential, Restricted tiers with enforcement rules
 - **GDPR/CCPA Compliance Patterns** — Consent management, data subject rights, retention policies
 - **Privacy-Safe Analytics** — Event tracking without PII leakage
@@ -38,6 +39,7 @@ Inspired by [claude-android-ninja](https://github.com/Drjacky/claude-android-nin
 - **Permission Justification Flows** — Contextual explanations before every permission request
 
 ### 📱 Modern Android Development
+
 - Modular architecture (feature-first, core modules, strict dependencies)
 - Domain/Data/UI layering with privacy-aware data flows
 - Jetpack Compose patterns, state management, animation, Material 3
@@ -54,6 +56,7 @@ Inspired by [claude-android-ninja](https://github.com/Drjacky/claude-android-nin
 - Crash reporting with PII scrubbing
 
 ### 🔐 Security
+
 - Network security configuration (HTTPS-only, no cleartext)
 - Certificate pinning (XML config + OkHttp programmatic)
 - Android Keystore, TEE & StrongBox integration
@@ -196,9 +199,11 @@ Once installed, Claude Code automatically uses this skill when you ask about And
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ### Suggest a Privacy Pattern
+
 If you have a privacy pattern or best practice to add, please [create a feature request](../../issues/new?template=feature_request.md).
 
 ### Report Issues
+
 Found outdated guidance or a bug? Please [report it](../../issues/new?template=bug_report.md).
 
 ## 📜 License

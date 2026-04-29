@@ -7,10 +7,13 @@ assignees: ''
 ---
 
 ## Describe the Bug
+
 A clear description of what's wrong.
 
 ## Which Reference File?
+
 Which file contains the incorrect/outdated guidance?
+
 - [ ] `SKILL.md`
 - [ ] `references/privacy-architecture.md`
 - [ ] `references/privacy-compliance.md`
@@ -21,10 +24,13 @@ Which file contains the incorrect/outdated guidance?
 - [ ] Other: _______________
 
 ## Expected Behavior
+
 What should the guidance say instead?
 
 ## Evidence
+
 Link to official Android documentation or source that contradicts the current guidance.
 
 ## Android API Level
+
 What API level is this relevant to?

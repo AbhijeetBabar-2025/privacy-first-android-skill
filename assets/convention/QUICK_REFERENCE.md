@@ -4,6 +4,7 @@
 
 1. Copy all files from `assets/convention/` to `build-logic/convention/src/main/kotlin/`
 2. Create `build-logic/settings.gradle.kts`:
+
    ```kotlin
    dependencyResolutionManagement {
        repositories {
@@ -19,12 +20,15 @@
    rootProject.name = "build-logic"
    include(":convention")
    ```
+
 3. Add to root `settings.gradle.kts`:
+
    ```kotlin
    pluginManagement {
        includeBuild("build-logic")
    }
    ```
+
 4. Add plugin entries to `gradle/libs.versions.toml`
 
 ## Available Convention Plugins

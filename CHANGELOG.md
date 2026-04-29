@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-04-29
 
 ### Added
+
 - Initial release of Privacy-First Android Skill
 - **SKILL.md** — Entry point with decision tree for Claude Code
 - **Privacy Architecture** — Data classification framework, minimization checklists, PrivacyGuard, consent management, data retention policies, user data lifecycle, Privacy Dashboard pattern

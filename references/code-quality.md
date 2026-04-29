@@ -1,11 +1,13 @@
 # Code Quality
 
 ## Detekt Setup
+
 - Use convention plugin for consistent configuration across modules
 - Start from `assets/detekt.yml.template`
 - Enable Compose rules (`io.nlopez.compose.rules:detekt`)
 
 ## Key Rules
+
 - `MaxLineLength`: 120
 - `ComplexMethod`: threshold 10
 - `LongParameterList`: threshold 6
@@ -13,11 +15,13 @@
 - Enable `ForbiddenComment` for `TODO` and `FIXME` in CI
 
 ## Privacy-Specific Rules
+
 - Custom rule: Flag raw `Log.*` calls (use `PrivacyLogger` instead)
 - Custom rule: Flag `toString()` on data classes with `@Classified(CONFIDENTIAL+)` fields
 - Custom rule: Flag `SharedPreferences` usage (use `EncryptedSharedPreferences`)
 
 ## CI Integration
+
 ```yaml
 - name: Run Detekt
   run: ./gradlew detekt

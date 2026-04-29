@@ -1,6 +1,7 @@
 # Accessibility
 
 ## Core Requirements
+
 - Minimum 48dp × 48dp touch targets
 - `contentDescription` for all icons and images
 - Semantic properties for TalkBack
@@ -9,6 +10,7 @@
 - Keyboard navigation support
 
 ## Compose Patterns
+
 ```kotlin
 Icon(
     imageVector = Icons.Default.Lock,
@@ -22,6 +24,7 @@ Modifier.semantics {
 ```
 
 ## Testing
+
 - Test with TalkBack enabled
 - Run Accessibility Scanner
 - Enable Espresso accessibility checks in instrumented tests

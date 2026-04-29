@@ -9,12 +9,14 @@ UI (Compose) → ViewModel → UseCase → Repository (interface) → DataSource
 ```
 
 ### Rules
+
 - UI depends on ViewModel only
 - ViewModel depends on UseCases/Repository interfaces (domain)
 - Data layer implements domain interfaces
 - **Privacy layer** (consent, classification) wraps data access
 
 ### ViewModel Pattern
+
 ```kotlin
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
@@ -38,6 +40,7 @@ class ProfileViewModel @Inject constructor(
 ```
 
 ### Repository Pattern (Privacy-Aware)
+
 ```kotlin
 // Domain layer — interface
 interface UserRepository {
@@ -61,6 +64,7 @@ class UserRepositoryImpl @Inject constructor(
 ```
 
 ### Network Layer
+
 ```kotlin
 @Module @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -73,6 +77,7 @@ object NetworkModule {
 ```
 
 ### Cross-cutting Anti-patterns
+
 - ❌ Context in ViewModel
 - ❌ Business logic in UI layer
 - ❌ Direct database access from ViewModel

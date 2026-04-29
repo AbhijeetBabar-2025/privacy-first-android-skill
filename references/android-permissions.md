@@ -3,6 +3,7 @@
 Request only what you need, explain why, and degrade gracefully when denied.
 
 ## Core Principles
+
 1. **Just-in-time** — request when the user triggers the feature, not at launch
 2. **Explain first** — show a rationale UI before the system dialog
 3. **Degrade gracefully** — the app must work (with reduced functionality) when denied
@@ -44,6 +45,7 @@ fun PermissionGatedFeature(
 ```
 
 ### Photo Picker (No Permission Needed)
+
 ```kotlin
 val pickMedia = rememberLauncherForActivityResult(
     PickVisualMedia()
@@ -63,6 +65,7 @@ Button(onClick = { pickMedia.launch(PickVisualMediaRequest(ImageOnly)) }) {
 - **POST_NOTIFICATIONS** (API 33+) — check before showing notifications
 
 ## Manifest Declarations
+
 ```xml
 <!-- Only declare permissions you actually use -->
 <uses-permission android:name="android.permission.CAMERA" />
@@ -75,11 +78,13 @@ Button(onClick = { pickMedia.launch(PickVisualMediaRequest(ImageOnly)) }) {
 ```
 
 Required:
+
 - Explain every permission to the user before requesting.
 - Provide degraded functionality when permission is denied.
 - Declare all permissions in Play Console Data Safety.
 
 Forbidden:
+
 - Requesting permissions at app launch without context.
 - Blocking the entire app when a permission is denied.
 - Using permissions not strictly necessary for the feature.
